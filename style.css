@@ -182,8 +182,8 @@ section.alt { background: var(--fundo-alt); }
 .numero p { font-family: var(--mono); color: var(--texto-suave); font-size: 13px; text-transform: uppercase; }
 
 /* Habilidades */
-.barras { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px 40px; }
-.barra-topo { display: flex; justify-content: space-between; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.barras { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px 40px; align-items: end; }
+.barra-topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
 .barra-topo span:last-child { font-family: var(--mono); color: var(--amarelo); }
 .barra {
   height: 12px; background: var(--cartao); border: 1px solid var(--borda); padding: 2px;
