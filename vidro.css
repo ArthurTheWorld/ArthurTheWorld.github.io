@@ -1,0 +1,117 @@
+/* Camada de "liquid glass" por cima do tema neon (style.css) */
+:root {
+  --vidro-escuro: rgba(10, 10, 20, .42);   /* estrutura: barra lateral */
+  --vidro-claro: rgba(40, 40, 70, .28);    /* elementos interativos e cards */
+  --vidro-borda: rgba(255, 255, 255, .14);
+  --vidro-brilho: rgba(255, 255, 255, .28);
+}
+
+/* Fundos das seções ficam transparentes para a grade aparecer atrás do vidro */
+.tema-vidro section, .tema-vidro section.alt, .tema-vidro .hero { background: transparent; }
+
+/* ---------- Fundo: log de pipelines (é o que o vidro desfoca) ---------- */
+.luzes {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--fundo);
+}
+/* escurece as bordas para o log não competir com o conteúdo */
+.luzes::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, var(--fundo) 0%, rgba(7,7,12,.55) 45%, transparent 75%),
+    radial-gradient(ellipse 90% 80% at 75% 50%, transparent 35%, var(--fundo) 100%);
+}
+.fluxo {
+  margin: 0; padding: 0 0 0 24px; will-change: transform;
+  font-family: var(--mono); font-size: 13px; line-height: 2.1; white-space: pre;
+  color: rgba(141, 139, 158, .11);
+}
+.fluxo b { font-weight: 400; }
+.fluxo .ok { color: rgba(0, 240, 255, .16); }
+.fluxo .aviso { color: rgba(252, 238, 10, .28); }
+.tema-vidro .grade { display: none; } /* a grade do topo já vem do fundo */
+
+/* Parallax do brilho vermelho do topo (valor vem do script em index.html) */
+.tema-vidro .hero::before { transform: translate3d(0, var(--brilho-y, 0px), 0); }
+
+/* ---------- Material de vidro ---------- */
+.tema-vidro .sidebar,
+.tema-vidro .menu-toggle,
+.tema-vidro .info,
+.tema-vidro .numero,
+.tema-vidro .filtros,
+.tema-vidro .servico,
+.tema-vidro .contato-info,
+.tema-vidro form {
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid var(--vidro-borda);
+  box-shadow:
+    inset 0 1px 0 var(--vidro-brilho),          /* luz batendo na borda de cima */
+    inset 0 -1px 0 rgba(255, 255, 255, .05),
+    0 12px 40px rgba(0, 0, 0, .35);
+}
+
+/* Barra lateral: material mais escuro e grosso (estrutura) */
+.tema-vidro .sidebar {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 30%), var(--vidro-escuro);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  border-width: 0 1px 0 0;
+}
+
+/* Cards: material mais claro */
+.tema-vidro .info,
+.tema-vidro .numero,
+.tema-vidro .servico,
+.tema-vidro .contato-info,
+.tema-vidro form {
+  background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.02) 45%), var(--vidro-claro);
+}
+.tema-vidro .numero { border-top: 1px solid var(--vidro-brilho); }
+.tema-vidro .servico { border-bottom: 1px solid var(--vidro-borda); }
+
+/* Filtros dos projetos viram uma barra de vidro só (sem vidro sobre vidro nos botões) */
+.tema-vidro .filtros {
+  display: inline-flex; padding: 6px; border-radius: 999px;
+  background: var(--vidro-claro);
+}
+.tema-vidro .filtros button { border-color: transparent; border-radius: 999px; }
+
+/* Campos do formulário: sólidos por cima do vidro, para não empilhar vidro claro */
+.tema-vidro input, .tema-vidro textarea { background: rgba(5, 5, 12, .7); }
+
+/* Botão de menu do celular em vidro amarelo */
+.tema-vidro .menu-toggle {
+  background: rgba(252, 238, 10, .78); color: #000;
+}
+
+/* Textos sobre o vidro: um pouco mais fortes para continuar legíveis */
+.tema-vidro .lead, .tema-vidro .servico p, .tema-vidro .numero p { color: #b9b7c9; }
+
+/* Distorção líquida (Chrome/Edge): só na barra lateral, onde o efeito aparece mais */
+.refracao .tema-vidro .sidebar {
+  backdrop-filter: url(#liquido) blur(14px) saturate(170%);
+}
+
+/* ---------- Acessibilidade ---------- */
+@media (prefers-reduced-transparency: reduce) {
+  .tema-vidro .sidebar, .tema-vidro .info, .tema-vidro .numero, .tema-vidro .filtros,
+  .tema-vidro .servico, .tema-vidro .contato-info, .tema-vidro form {
+    -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--cartao);
+  }
+  .tema-vidro .sidebar { background: #040407; }
+}
+@media (prefers-contrast: more) {
+  .tema-vidro .sidebar, .tema-vidro .info, .tema-vidro .numero, .tema-vidro .filtros,
+  .tema-vidro .servico, .tema-vidro .contato-info, .tema-vidro form {
+    background: rgba(8, 8, 14, .94); border-color: var(--texto-suave);
+  }
+}
+
+/* No celular o desfoque pesa mais: menos blur */
+@media (max-width: 700px) {
+  .tema-vidro .info, .tema-vidro .numero, .tema-vidro .servico, .tema-vidro .contato-info, .tema-vidro form {
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+}

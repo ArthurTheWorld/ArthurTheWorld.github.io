@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfólio</title>
+  <meta name="description" content="Portfólio de Luiz Arthur — Engenheiro de Dados">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Tela de inicialização -->
+  <div class="boot" id="boot" aria-hidden="true">
+    <pre id="bootTexto"></pre>
+  </div>
+
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu"><i class="bi bi-list"></i></button>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="perfil">
+      <div class="avatar" id="avatar"></div>
+      <h1 id="sidebarNome"></h1>
+      <p class="status"><span class="pulso"></span> ONLINE</p>
+      <div class="redes" id="redes"></div>
+    </div>
+    <nav>
+      <a href="#inicio" class="ativo"><span>00</span> Início</a>
+      <a href="#sobre"><span>01</span> Sobre</a>
+      <a href="#habilidades"><span>02</span> Competências</a>
+      <a href="#curriculo"><span>03</span> Histórico</a>
+      <a href="#projetos"><span>04</span> Projetos</a>
+      <a href="#servicos"><span>05</span> Serviços</a>
+      <a href="#contato"><span>06</span> Transmissão</a>
+    </nav>
+    <p class="versao">SYS v2.0.77 // build neon</p>
+  </aside>
+
+  <main>
+    <section id="inicio" class="hero">
+      <div class="grade"></div>
+      <div class="hero-conteudo">
+        <p class="pre-titulo">&gt; acesso_concedido</p>
+        <h2 id="heroNome" class="glitch"></h2>
+        <p class="digitando">// <span id="digitado"></span><span class="cursor">_</span></p>
+        <a href="#projetos" class="botao">Ver projetos <i class="bi bi-chevron-double-right"></i></a>
+      </div>
+    </section>
+
+    <section id="sobre">
+      <div class="titulo-secao"><span>01</span><h2>Perfil profissional</h2></div>
+      <p id="resumo" class="lead"></p>
+      <div class="sobre-grid">
+        <div>
+          <h3 id="sobreTitulo"></h3>
+          <p id="destaque"></p>
+          <ul class="info" id="info"></ul>
+        </div>
+      </div>
+      <div class="numeros" id="numeros"></div>
+    </section>
+
+    <section id="habilidades" class="alt">
+      <div class="titulo-secao"><span>02</span><h2>Competências técnicas</h2></div>
+      <div class="barras" id="barras"></div>
+    </section>
+
+    <section id="curriculo">
+      <div class="titulo-secao"><span>03</span><h2>Histórico</h2></div>
+      <div class="curriculo-grid">
+        <div>
+          <h3 class="subtitulo">Treinamento</h3>
+          <div class="linha-tempo" id="formacao"></div>
+        </div>
+        <div>
+          <h3 class="subtitulo">Contratos</h3>
+          <div class="linha-tempo" id="experiencias"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projetos" class="alt">
+      <div class="titulo-secao"><span>04</span><h2>Projetos em destaque</h2></div>
+      <div class="filtros" id="filtros"></div>
+      <div class="projetos-grid" id="projetosGrid"></div>
+    </section>
+
+    <section id="servicos">
+      <div class="titulo-secao"><span>05</span><h2>Serviços</h2></div>
+      <div class="servicos-grid" id="servicosGrid"></div>
+    </section>
+
+    <section id="contato" class="alt">
+      <div class="titulo-secao"><span>06</span><h2>Abrir transmissão</h2></div>
+      <div class="contato-grid">
+        <div class="contato-info" id="contatoInfo"></div>
+        <form id="formContato">
+          <div class="linha">
+            <input name="nome" placeholder="> nome" required>
+            <input name="email" type="email" placeholder="> email" required>
+          </div>
+          <input name="assunto" placeholder="> assunto" required>
+          <textarea name="mensagem" rows="6" placeholder="> mensagem" required></textarea>
+          <button type="submit">Transmitir</button>
+          <p class="status-form" id="statusForm"></p>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <p>© <span id="ano"></span> <span id="rodapeNome"></span> // fim da transmissão</p>
+    </footer>
+  </main>
+
+  <script src="../dados.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    // Efeito glitch usa o nome como texto das camadas
+    document.getElementById("heroNome").dataset.text = DADOS.nome;
+
+    // Tela de inicialização (só na primeira visita da sessão)
+    (function () {
+      const boot = document.getElementById("boot");
+      let jaViu = false;
+      try { jaViu = sessionStorage.getItem("boot") === "1"; sessionStorage.setItem("boot", "1"); } catch {}
+      if (jaViu || matchMedia("(prefers-reduced-motion: reduce)").matches) { boot.remove(); return; }
+      const linhas = [
+        "> iniciando sistema..........OK",
+        "> carregando pipelines.......OK",
+        "> conectando ao lakehouse....OK",
+        "> verificando credenciais....OK",
+        `> bem-vindo, ${DADOS.nome.toUpperCase()}`,
+      ];
+      const pre = document.getElementById("bootTexto");
+      linhas.forEach((l, i) => setTimeout(() => (pre.textContent += l + "\n"), 180 * i));
+      setTimeout(() => boot.classList.add("sair"), 180 * linhas.length + 350);
+      setTimeout(() => boot.remove(), 180 * linhas.length + 900);
+      boot.addEventListener("click", () => boot.remove());
+    })();
+  </script>
+</body>
+</html>

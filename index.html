@@ -9,8 +9,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
+  <link href="vidro.css" rel="stylesheet">
 </head>
-<body>
+<body class="tema-vidro">
+
+  <!-- Fundo: log de pipelines rolando por trás do vidro -->
+  <div class="luzes" aria-hidden="true"><pre class="fluxo" id="fluxo"></pre></div>
+
+  <!-- Distorção "líquida" nas bordas do vidro (só Chrome/Edge aplicam) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="liquido" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="ruido"/>
+      <feGaussianBlur in="ruido" stdDeviation="2" result="ruidoSuave"/>
+      <feDisplacementMap in="SourceGraphic" in2="ruidoSuave" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+  <script>
+    // Só navegadores Chromium aplicam filtro SVG no backdrop-filter; os outros ficam com vidro fosco
+    if (navigator.userAgentData?.brands?.some((b) => b.brand === "Chromium")) document.documentElement.classList.add("refracao");
+  </script>
 
   <!-- Tela de inicialização -->
   <div class="boot" id="boot" aria-hidden="true">
@@ -117,6 +134,58 @@
   <script src="dados.js"></script>
   <script src="script.js"></script>
   <script>
+    // Fundo: linhas de log geradas a partir dos projetos reais (dados.js), repetidas em dois blocos
+    // iguais para o parallax poder dar a volta sem emenda.
+    function montarFluxo() {
+      const fluxo = document.getElementById("fluxo");
+      const slug = (t) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+      const tarefas = ["extract_raw", "load_bronze", "dedup_silver", "merge_delta", "build_gold", "dbt_test", "quality_check", "publish_mart"];
+      const motores = ["airflow", "databricks", "dbt", "spark", "kafka"];
+      let semente = 7;
+      const aleatorio = () => (semente = (semente * 16807) % 2147483647) / 2147483647;
+      const linhas = [];
+      for (let i = 0; i < 48; i++) { // 48 linhas ≈ 1300px: um bloco cobre telas altas
+        const p = DADOS.projetos[i % DADOS.projetos.length];
+        const h = String(Math.floor(aleatorio() * 24)).padStart(2, "0") + ":" + String(Math.floor(aleatorio() * 60)).padStart(2, "0") + ":" + String(Math.floor(aleatorio() * 60)).padStart(2, "0");
+        const status = aleatorio() < 0.86 ? '<b class="ok">success</b>' : '<b class="aviso">retry</b>';
+        linhas.push(`${h}  ${motores[i % motores.length].padEnd(10)} dag=${slug(p.titulo).padEnd(30)} task=${tarefas[Math.floor(aleatorio() * tarefas.length)].padEnd(14)} status=${status}  rows=${Math.floor(aleatorio() * 98000 + 2000)}  ${(aleatorio() * 40 + 1).toFixed(1)}s`);
+      }
+      const bloco = linhas.join("\n") + "\n";
+      fluxo.innerHTML = bloco + bloco;
+      return fluxo.scrollHeight / 2;
+    }
+
+    // Parallax: log do fundo a 30% da rolagem e camadas do topo em velocidades diferentes.
+    // Desligado para quem pede menos movimento e em telas de celular.
+    (function () {
+      const semMovimento = matchMedia("(prefers-reduced-motion: reduce)");
+      const celular = matchMedia("(max-width: 700px)");
+      const grade = document.getElementById("fluxo");
+      const hero = document.querySelector(".hero");
+      const heroConteudo = document.querySelector(".hero-conteudo");
+      const PASSO = montarFluxo(); // altura de um bloco de log
+      let agendado = false;
+
+      function aplicar() {
+        agendado = false;
+        if (semMovimento.matches || celular.matches) {
+          grade.style.transform = heroConteudo.style.transform = "";
+          hero.style.removeProperty("--brilho-y");
+          return;
+        }
+        const y = scrollY;
+        grade.style.transform = `translate3d(0, ${-((y * 0.3) % PASSO)}px, 0)`;
+        if (y < innerHeight) {
+          heroConteudo.style.transform = `translate3d(0, ${y * -0.15}px, 0)`;
+          hero.style.setProperty("--brilho-y", `${y * 0.4}px`);
+        }
+      }
+      addEventListener("scroll", () => { if (!agendado) { agendado = true; requestAnimationFrame(aplicar); } }, { passive: true });
+      semMovimento.addEventListener("change", aplicar);
+      celular.addEventListener("change", aplicar);
+      aplicar();
+    })();
+
     // Efeito glitch usa o nome como texto das camadas
     document.getElementById("heroNome").dataset.text = DADOS.nome;
 
