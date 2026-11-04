@@ -62,9 +62,8 @@ a { color: var(--ciano); text-decoration: none; }
 .status { font-family: var(--mono); font-size: 13px; color: var(--ciano); margin-top: 4px; }
 .pulso {
   display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ciano);
-  box-shadow: 0 0 8px var(--ciano); animation: pulso 1.6s infinite;
+  box-shadow: 0 0 8px var(--ciano);
 }
-@keyframes pulso { 50% { opacity: .25; } }
 .redes { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
 .redes a {
   width: 36px; height: 36px; display: grid; place-items: center;
