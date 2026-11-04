@@ -24,6 +24,7 @@ const DADOS = {
     { rotulo: "Email", valor: "luizarthur1831@gmail.com" },
     { rotulo: "Formação", valor: "Análise e Desenvolvimento de Sistemas" },
     { rotulo: "Certificação", valor: "Databricks Fundamentals" },
+    { rotulo: "Idiomas", valor: "Português (nativo), Inglês (avançado/fluente)" },
     { rotulo: "Foco", valor: "Engenharia de Dados, Lakehouse & Cloud" },
   ],
 
