@@ -4,6 +4,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 const d = DADOS;
+const poucoMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.title = `${d.nome} | ${d.titulo}`;
 
 // Perfil
@@ -122,6 +123,7 @@ $("formContato").addEventListener("submit", async (e) => {
 
 // Texto digitando no topo
 (function digitar() {
+  if (poucoMovimento) { $("digitado").textContent = d.frasesDigitadas[0]; return; }
   let frase = 0, letra = 0, apagando = false;
   const alvo = $("digitado");
   (function passo() {
@@ -137,6 +139,7 @@ $("formContato").addEventListener("submit", async (e) => {
 
 // Animações ao rolar: fade-in, barras e contadores
 function contar(el) {
+  if (poucoMovimento) { el.textContent = el.dataset.alvo + el.dataset.sufixo; return; }
   const alvo = +el.dataset.alvo, inicio = performance.now(), dur = 1200;
   (function quadro(t) {
     const p = Math.min((t - inicio) / dur, 1);
@@ -148,7 +151,7 @@ const observador = new IntersectionObserver((entradas) => {
   entradas.forEach((en) => {
     if (!en.isIntersecting) return;
     en.target.classList.add("visivel");
-    en.target.querySelectorAll("[data-nivel]").forEach((b) => (b.style.width = b.dataset.nivel + "%"));
+    en.target.querySelectorAll("[data-nivel]").forEach((b) => (b.style.clipPath = `inset(0 ${100 - b.dataset.nivel}% 0 0)`));
     en.target.querySelectorAll("[data-alvo]").forEach(contar);
     observador.unobserve(en.target);
   });
