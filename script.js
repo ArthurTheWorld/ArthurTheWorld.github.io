@@ -7,10 +7,28 @@ const d = DADOS;
 const poucoMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.title = `${d.nome} | ${d.titulo}`;
 
+// Só a página principal (tema de vidro) usa pipeline, logos e projetos resumidos
+const temaVidro = document.body.classList.contains("tema-vidro");
+const ARQUIVOS_LOGO = { spark: "apachespark", bigquery: "googlebigquery", mongodb: "mongodb-icon" };
+const NOMES_LOGO = {
+  python: "Python", databricks: "Databricks", dbt: "dbt", airflow: "Airflow", kafka: "Kafka", snowflake: "Snowflake",
+  terraform: "Terraform", docker: "Docker", "power-bi": "Power BI", azure: "Azure", aws: "AWS", "google-cloud": "Google Cloud",
+  postgres: "PostgreSQL", "github-actions": "GitHub Actions", streamlit: "Streamlit", spark: "Apache Spark",
+  bigquery: "BigQuery", duckdb: "DuckDB", mlflow: "MLflow", ollama: "Ollama", fastapi: "FastAPI", mongodb: "MongoDB",
+};
+const logo = (chave, decorativo = false) =>
+  `<img class="logo" src="assets/icons/${ARQUIVOS_LOGO[chave] || chave}.svg" alt="${decorativo ? "" : NOMES_LOGO[chave]}"${decorativo ? "" : ` title="${NOMES_LOGO[chave]}"`} width="20" height="20" loading="lazy">`;
+
 // Perfil
 $("avatar").innerHTML = d.foto ? `<img src="${esc(d.foto)}" alt="${esc(d.nome)}">` : esc(d.iniciais);
 $("sidebarNome").textContent = d.nome;
 $("heroNome").textContent = d.nome;
+if ($("heroFato")) $("heroFato").textContent = d.fato;
+if ($("pipeline")) {
+  $("pipeline").innerHTML = d.pipeline
+    .map((e, i) => `<li style="--i:${i}">${logo(e.logo, true)}<strong>${esc(e.nome)}</strong><span>${esc(e.papel)}</span></li>`)
+    .join("");
+}
 $("rodapeNome").textContent = d.nome;
 $("ano").textContent = new Date().getFullYear();
 
@@ -30,14 +48,21 @@ $("info").innerHTML = d.info
   .map((i) => `<li><i class="bi bi-chevron-right"></i><span><strong>${esc(i.rotulo)}:</strong> ${esc(i.valor)}</span></li>`)
   .join("");
 $("numeros").innerHTML = d.numeros
-  .map((n) => `<div class="numero revelar"><span data-alvo="${n.valor}" data-sufixo="${esc(n.sufixo)}">0</span><p>${esc(n.rotulo)}</p></div>`)
+  .map((n) => `<div class="numero revelar"><span data-alvo="${n.valor}" data-sufixo="${esc(n.sufixo)}">${n.valor}${esc(n.sufixo)}</span><p>${esc(n.rotulo)}</p></div>`)
   .join("");
 
 // Habilidades
-$("barras").innerHTML = d.habilidades
+$("barras").innerHTML = temaVidro
+  ? d.competencias
+    .map((g) => `<div class="grupo-comp revelar">
+        <h3>${esc(g.area)}</h3>
+        <ul>${g.itens.map((i) => `<li>${i.logo ? logo(i.logo, true) : `<i class="bi ${esc(i.icone)}" aria-hidden="true"></i>`}${esc(i.nome)}</li>`).join("")}</ul>
+      </div>`)
+    .join("")
+  : d.habilidades
   .map((h) => `<div class="revelar">
       <div class="barra-topo"><span>${esc(h.nome)}</span><span>${h.nivel}%</span></div>
-      <div class="barra"><div data-nivel="${h.nivel}"></div></div>
+      <div class="barra"><div style="clip-path: inset(0 ${100 - h.nivel}% 0 0)"></div></div>
     </div>`)
   .join("");
 
@@ -57,18 +82,34 @@ const iconeCategoria = ["bi-database", "bi-lightning-charge", "bi-shield-check",
 $("filtros").innerHTML = ["Todos", ...d.categorias]
   .map((c, i) => `<button class="${i === 0 ? "ativo" : ""}" data-filtro="${esc(c)}">${esc(c)}</button>`)
   .join("");
-function mostrarProjetos(filtro) {
-  $("projetosGrid").innerHTML = d.projetos
-    .filter((p) => filtro === "Todos" || p.categoria === filtro)
-    .map((p) => {
+const LIMITE_PROJETOS = 6;
+// animarDe: a partir de qual card os novos entram com animação (null = nenhum)
+function mostrarProjetos(filtro, verTudo = false, animarDe = null) {
+  const lista = d.projetos.filter((p) => filtro === "Todos" || p.categoria === filtro);
+  const resumir = temaVidro && filtro === "Todos" && !verTudo && lista.length > LIMITE_PROJETOS;
+  const botaoTodos = $("verTodos");
+  if (botaoTodos) {
+    botaoTodos.hidden = !resumir;
+    botaoTodos.textContent = `Ver todos os ${lista.length} projetos`;
+  }
+  $("projetosGrid").innerHTML = (resumir ? lista.slice(0, LIMITE_PROJETOS) : lista)
+    .map((p, i) => {
+      const entra = temaVidro && !poucoMovimento && animarDe !== null && i >= animarDe;
       const icone = iconeCategoria[d.categorias.indexOf(p.categoria)] || "bi-folder";
-      return `<article class="projeto">
-        <div class="capa">${p.imagem ? `<img src="${esc(p.imagem)}" alt="">` : `<i class="bi ${icone}"></i>`}</div>
+      const capa = p.imagem
+        ? `<div class="capa"><img src="${esc(p.imagem)}" alt=""></div>`
+        : temaVidro ? "" : `<div class="capa"><i class="bi ${icone}"></i></div>`;
+      return `<article class="projeto${entra ? " entra" : ""}"${entra ? ` style="--i:${i - animarDe}"` : ""}>
+        ${capa}
         <div class="corpo">
-          <span class="tag">${esc(p.categoria)}</span>
+          <span class="tag">${temaVidro && !p.imagem ? `<i class="bi ${icone}"></i>` : ""}${esc(p.categoria)}</span>
           <h4>${esc(p.titulo)}</h4>
+          ${temaVidro && p.destaque ? `<p class="destaque-proj">${esc(p.destaque)}</p>` : ""}
           <p>${esc(p.descricao)}</p>
-          ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Ver projeto <i class="bi bi-arrow-right"></i></a>` : ""}
+          <div class="proj-rodape">
+            ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Ver projeto <i class="bi bi-arrow-right"></i></a>` : ""}
+            ${temaVidro && p.ferramentas ? `<span class="proj-logos">${p.ferramentas.map((f) => logo(f)).join("")}</span>` : ""}
+          </div>
         </div>
       </article>`;
     }).join("");
@@ -77,7 +118,12 @@ $("filtros").addEventListener("click", (e) => {
   const botao = e.target.closest("button");
   if (!botao) return;
   $("filtros").querySelectorAll("button").forEach((b) => b.classList.toggle("ativo", b === botao));
-  mostrarProjetos(botao.dataset.filtro);
+  mostrarProjetos(botao.dataset.filtro, false, 0);
+});
+$("verTodos")?.addEventListener("click", () => {
+  mostrarProjetos("Todos", true, LIMITE_PROJETOS);
+  // Leva o foco ao primeiro projeto novo, para quem navega pelo teclado
+  $("projetosGrid").children[LIMITE_PROJETOS]?.querySelector("a")?.focus();
 });
 mostrarProjetos("Todos");
 
@@ -121,29 +167,37 @@ $("formContato").addEventListener("submit", async (e) => {
   }
 });
 
-// Texto digitando no topo
+// Texto digitando no topo: já abre no cargo, passa pelas outras frases uma vez e para no cargo
 (function digitar() {
-  if (poucoMovimento) { $("digitado").textContent = d.frasesDigitadas[0]; return; }
-  let frase = 0, letra = 0, apagando = false;
-  const alvo = $("digitado");
-  (function passo() {
-    const texto = d.frasesDigitadas[frase];
+  const alvo = $("digitado"), frases = d.frasesDigitadas;
+  alvo.textContent = frases[0];
+  const cursor = document.querySelector(".cursor");
+  if (poucoMovimento) { cursor?.remove(); return; }
+  let frase = 0, letra = frases[0].length, apagando = true, voltas = 0;
+  function passo() {
+    const texto = frases[frase];
     letra += apagando ? -1 : 1;
     alvo.textContent = texto.slice(0, letra);
     let espera = apagando ? 50 : 100;
-    if (!apagando && letra === texto.length) { apagando = true; espera = 1800; }
-    else if (apagando && letra === 0) { apagando = false; frase = (frase + 1) % d.frasesDigitadas.length; espera = 400; }
+    if (!apagando && letra === texto.length) {
+      if (voltas === frases.length) { cursor?.remove(); return; }
+      apagando = true; espera = 1800;
+    } else if (apagando && letra === 0) {
+      apagando = false; frase = (frase + 1) % frases.length; voltas++; espera = 400;
+    }
     setTimeout(passo, espera);
-  })();
+  }
+  setTimeout(passo, 1800);
 })();
 
 // Animações ao rolar: fade-in, barras e contadores
 function contar(el) {
   if (poucoMovimento) { el.textContent = el.dataset.alvo + el.dataset.sufixo; return; }
-  const alvo = +el.dataset.alvo, inicio = performance.now(), dur = 1200;
+  const alvo = +el.dataset.alvo, inicio = performance.now(), dur = 800;
   (function quadro(t) {
     const p = Math.min((t - inicio) / dur, 1);
-    el.textContent = Math.round(alvo * p) + (p === 1 ? el.dataset.sufixo : "");
+    const e = 1 - (1 - p) ** 3; // desacelera ao chegar no valor final
+    el.textContent = Math.round(alvo * e) + (p === 1 ? el.dataset.sufixo : "");
     if (p < 1) requestAnimationFrame(quadro);
   })(inicio);
 }
@@ -151,11 +205,12 @@ const observador = new IntersectionObserver((entradas) => {
   entradas.forEach((en) => {
     if (!en.isIntersecting) return;
     en.target.classList.add("visivel");
-    en.target.querySelectorAll("[data-nivel]").forEach((b) => (b.style.clipPath = `inset(0 ${100 - b.dataset.nivel}% 0 0)`));
     en.target.querySelectorAll("[data-alvo]").forEach(contar);
     observador.unobserve(en.target);
   });
 }, { threshold: 0.2 });
+// Só esconde os blocos depois que o observador existe: se ele falhar, o conteúdo continua visível
+document.documentElement.classList.add("anima");
 document.querySelectorAll(".revelar").forEach((el) => observador.observe(el));
 
 // Menu: destaca a seção atual e abre/fecha no celular
@@ -166,5 +221,12 @@ window.addEventListener("scroll", () => {
   const atual = secoes.filter((s) => s.offsetTop <= y).pop();
   links.forEach((a) => a.classList.toggle("ativo", atual && a.getAttribute("href") === "#" + atual.id));
 });
-$("menuToggle").addEventListener("click", () => $("sidebar").classList.toggle("aberta"));
-links.forEach((a) => a.addEventListener("click", () => $("sidebar").classList.remove("aberta")));
+function menu(aberto) {
+  $("sidebar").classList.toggle("aberta", aberto);
+  $("veu")?.classList.toggle("visivel", aberto);
+  $("menuToggle").setAttribute("aria-expanded", aberto);
+  $("menuToggle").setAttribute("aria-label", aberto ? "Fechar menu" : "Abrir menu");
+}
+$("menuToggle").addEventListener("click", () => menu(!$("sidebar").classList.contains("aberta")));
+$("veu")?.addEventListener("click", () => menu(false));
+links.forEach((a) => a.addEventListener("click", () => menu(false)));

@@ -219,6 +219,7 @@ footer { padding: 28px; text-align: center; font-size: 14px; color: var(--texto-
 /* Animação de entrada */
 .revelar { opacity: 0; transform: translateY(24px); transition: opacity .7s, transform .7s; }
 .revelar.visivel { opacity: 1; transform: none; }
+.anima .revelar:not(.visivel) .barra div { clip-path: inset(0 100% 0 0) !important; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

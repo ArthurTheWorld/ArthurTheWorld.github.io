@@ -8,49 +8,37 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
-  <link href="vidro.css?v=3" rel="stylesheet">
+  <link href="style.css?v=4" rel="stylesheet">
+  <link href="vidro.css?v=17" rel="stylesheet">
 </head>
 <body class="tema-vidro">
 
-  <!-- Fundo: cidade à noite, desenhada por fundo.js -->
+  <!-- Fundo: cardume de peixes em caracteres, desenhado por fundo.js -->
   <div class="luzes" aria-hidden="true"></div>
-
-  <!-- Distorção "líquida" nas bordas do vidro (só Chrome/Edge aplicam) -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <filter id="liquido" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="ruido"/>
-      <feGaussianBlur in="ruido" stdDeviation="2" result="ruidoSuave"/>
-      <feDisplacementMap in="SourceGraphic" in2="ruidoSuave" scale="38" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
-  <script>
-    // Só navegadores Chromium aplicam filtro SVG no backdrop-filter; os outros ficam com vidro fosco
-    if (navigator.userAgentData?.brands?.some((b) => b.brand === "Chromium")) document.documentElement.classList.add("refracao");
-  </script>
 
   <!-- Tela de inicialização -->
   <div class="boot" id="boot" aria-hidden="true">
     <pre id="bootTexto"></pre>
   </div>
 
-  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu"><i class="bi bi-list"></i></button>
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false"><i class="bi bi-list"></i></button>
+  <div class="veu" id="veu"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="perfil">
       <div class="avatar" id="avatar"></div>
-      <h1 id="sidebarNome"></h1>
+      <p class="nome" id="sidebarNome"></p>
       <p class="status"><span class="pulso"></span> ONLINE</p>
       <div class="redes" id="redes"></div>
     </div>
     <nav>
       <a href="#inicio" class="ativo"><span>00</span> Início</a>
-      <a href="#sobre"><span>01</span> Sobre</a>
+      <a href="#sobre"><span>01</span> Perfil</a>
       <a href="#habilidades"><span>02</span> Competências</a>
       <a href="#curriculo"><span>03</span> Histórico</a>
       <a href="#projetos"><span>04</span> Projetos</a>
       <a href="#servicos"><span>05</span> Serviços</a>
-      <a href="#contato"><span>06</span> Transmissão</a>
+      <a href="#contato"><span>06</span> Contato</a>
     </nav>
     <p class="versao">SYS v2.0.77 // build neon</p>
   </aside>
@@ -60,9 +48,11 @@
       <div class="grade"></div>
       <div class="hero-conteudo">
         <p class="pre-titulo">&gt; acesso_concedido</p>
-        <h2 id="heroNome" class="glitch"></h2>
+        <h1 id="heroNome" class="glitch"></h1>
         <p class="digitando">// <span id="digitado"></span><span class="cursor">_</span></p>
+        <p class="fato-hero" id="heroFato"></p>
         <a href="#projetos" class="botao">Ver projetos <i class="bi bi-chevron-double-right"></i></a>
+        <ol class="pipeline" id="pipeline" aria-label="Caminho do dado: da ingestão aos dashboards"></ol>
       </div>
     </section>
 
@@ -88,11 +78,11 @@
       <div class="titulo-secao"><span>03</span><h2>Histórico</h2></div>
       <div class="curriculo-grid">
         <div>
-          <h3 class="subtitulo">Treinamento</h3>
+          <h3 class="subtitulo">Formação</h3>
           <div class="linha-tempo" id="formacao"></div>
         </div>
         <div>
-          <h3 class="subtitulo">Contratos</h3>
+          <h3 class="subtitulo">Experiência</h3>
           <div class="linha-tempo" id="experiencias"></div>
         </div>
       </div>
@@ -102,6 +92,7 @@
       <div class="titulo-secao"><span>04</span><h2>Projetos em destaque</h2></div>
       <div class="filtros" id="filtros"></div>
       <div class="projetos-grid" id="projetosGrid"></div>
+      <button type="button" class="botao ver-todos" id="verTodos" hidden></button>
     </section>
 
     <section id="servicos">
@@ -110,7 +101,7 @@
     </section>
 
     <section id="contato" class="alt">
-      <div class="titulo-secao"><span>06</span><h2>Abrir transmissão</h2></div>
+      <div class="titulo-secao"><span>06</span><h2>Contato</h2></div>
       <div class="contato-grid">
         <div class="contato-info" id="contatoInfo"></div>
         <form id="formContato">
@@ -120,20 +111,21 @@
           </div>
           <input name="assunto" placeholder="> assunto" required>
           <textarea name="mensagem" rows="6" placeholder="> mensagem" required></textarea>
-          <button type="submit">Transmitir</button>
+          <button type="submit">Enviar mensagem</button>
           <p class="status-form" id="statusForm"></p>
         </form>
       </div>
     </section>
 
     <footer>
-      <p>© <span id="ano"></span> <span id="rodapeNome"></span> // fim da transmissão</p>
+      <p>© <span id="ano"></span> <span id="rodapeNome"></span></p>
+      <p class="marcas">Nomes e logos de produtos pertencem aos seus donos.</p>
     </footer>
   </main>
 
-  <script src="dados.js"></script>
-  <script src="script.js"></script>
-  <script src="fundo.js?v=2"></script>
+  <script src="dados.js?v=3"></script>
+  <script src="script.js?v=4"></script>
+  <script src="fundo.js?v=20"></script>
   <script>
     // Efeito glitch usa o nome como texto das camadas
     document.getElementById("heroNome").dataset.text = DADOS.nome;
@@ -143,7 +135,11 @@
       const boot = document.getElementById("boot");
       let jaViu = false;
       try { jaViu = sessionStorage.getItem("boot") === "1"; sessionStorage.setItem("boot", "1"); } catch {}
-      if (jaViu || matchMedia("(prefers-reduced-motion: reduce)").matches) { boot.remove(); return; }
+      // A pipeline se desenha quando o site aparece; com "menos movimento" ela já fica pronta
+      const pipeline = document.getElementById("pipeline");
+      const ligar = () => pipeline.classList.add("ligar");
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) { boot.remove(); return; }
+      if (jaViu) { boot.remove(); ligar(); return; }
       const linhas = [
         "> iniciando sistema..........OK",
         "> carregando pipelines.......OK",
@@ -152,10 +148,10 @@
         `> bem-vindo, ${DADOS.nome.toUpperCase()}`,
       ];
       const pre = document.getElementById("bootTexto");
-      linhas.forEach((l, i) => setTimeout(() => (pre.textContent += l + "\n"), 180 * i));
-      setTimeout(() => boot.classList.add("sair"), 180 * linhas.length + 350);
-      setTimeout(() => boot.remove(), 180 * linhas.length + 900);
-      boot.addEventListener("click", () => boot.remove());
+      linhas.forEach((l, i) => setTimeout(() => (pre.textContent += l + "\n"), 100 * i));
+      setTimeout(() => { boot.classList.add("sair"); ligar(); }, 100 * linhas.length + 100);
+      setTimeout(() => boot.remove(), 100 * linhas.length + 280);
+      boot.addEventListener("click", () => { boot.remove(); ligar(); });
     })();
   </script>
 </body>

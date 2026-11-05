@@ -9,6 +9,7 @@ const DADOS = {
   foto: "",                       // ex.: "img/foto.jpg" (deixe vazio para usar as iniciais)
   titulo: "Engenheiro de Dados",
   frasesDigitadas: ["Engenheiro de Dados", "Analytics Engineer", "construtor de pipelines"],
+  fato: "Engenharia de dados: 3+ anos com Databricks, dbt e Spark", // linha fixa no topo da página
 
   resumo:
     "Engenheiro de Dados com 3 anos de experiência em Databricks, dbt, Spark e Airflow, " +
@@ -54,6 +55,36 @@ const DADOS = {
     { nome: "Terraform, Docker & CI/CD", nivel: 70 },
   ],
 
+  // Página principal: o caminho do dado no topo (tudo do currículo)
+  pipeline: [
+    { nome: "Data Factory", papel: "Pipelines diários", logo: "azure" },
+    { nome: "Bronze", papel: "Dado bruto", logo: "databricks" },
+    { nome: "Silver", papel: "Dado tratado", logo: "databricks" },
+    { nome: "Gold", papel: "20+ modelos dbt", logo: "dbt" },
+    { nome: "Power BI", papel: "5 dashboards", logo: "power-bi" },
+  ],
+
+  // Página principal: competências por área. logo = arquivo em assets/icons; icone = Bootstrap Icons
+  competencias: [
+    { area: "Linguagens e processamento", itens: [
+      { nome: "Python", logo: "python" }, { nome: "SQL", icone: "bi-database" },
+      { nome: "Spark e PySpark", logo: "spark" }, { nome: "Databricks", logo: "databricks" },
+    ] },
+    { area: "Modelagem e BI", itens: [
+      { nome: "dbt", logo: "dbt" }, { nome: "Modelagem dimensional", icone: "bi-diagram-3" },
+      { nome: "Power BI e DAX", logo: "power-bi" },
+    ] },
+    { area: "Orquestração e streaming", itens: [
+      { nome: "Airflow", logo: "airflow" }, { nome: "Databricks Workflows", logo: "databricks" },
+      { nome: "Data Factory", logo: "azure" }, { nome: "Kafka", logo: "kafka" },
+    ] },
+    { area: "Cloud e infraestrutura", itens: [
+      { nome: "AWS", logo: "aws" }, { nome: "Azure", logo: "azure" }, { nome: "GCP", logo: "google-cloud" },
+      { nome: "Snowflake", logo: "snowflake" }, { nome: "Terraform", logo: "terraform" },
+      { nome: "Docker", logo: "docker" }, { nome: "CI/CD", icone: "bi-arrow-repeat" },
+    ] },
+  ],
+
   formacao: [
     { titulo: "Análise e Desenvolvimento de Sistemas", periodo: "2023 – 2026", local: "Grupo Projeção", texto: "" },
     { titulo: "Databricks Fundamentals Accreditation", periodo: "Certificação", local: "Databricks", texto: "" },
@@ -96,20 +127,20 @@ const DADOS = {
   // link: cole o endereço do repositório de cada projeto no GitHub
   categorias: ["Lakehouse & DW", "Streaming & CDC", "Qualidade de Dados", "Cloud & ELT", "MLOps & IA"],
   projetos: [
-    { titulo: "Data Warehouse no Databricks", descricao: "Pipeline Landing → Bronze → Silver → Gold com Delta Live Tables, Structured Streaming e Volumes do Unity Catalog.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/Projeto-Data_Warehouse_Databricks", imagem: "" },
-    { titulo: "CNPJ Lakehouse", descricao: "Lakehouse sobre os dados abertos de CNPJ da Receita: ~60 milhões de empresas e ~100 GB, tratando skew e layout sujo.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/cnpj-lakehouse", imagem: "" },
-    { titulo: "CVM Fundos no BigQuery", descricao: "Lakehouse de fundos da CVM com BigQuery (raw / staging / marts), dbt, Airflow e CI.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/cvm-bigquery-lakehouse", imagem: "" },
-    { titulo: "Olist Analytics Pipeline", descricao: "Pipeline analítico com DuckDB, dbt e Streamlit sobre ~100 mil pedidos reais de e-commerce.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/olist-analytics-pipeline", imagem: "" },
-    { titulo: "CDC Lakehouse", descricao: "CDC de ponta a ponta: Postgres → Debezium → Kafka → Spark → Delta Lake, com MERGE idempotente e evolução de schema.", categoria: "Streaming & CDC", link: "https://github.com/ArthurTheWorld/cdc-lakehouse", imagem: "" },
-    { titulo: "Streaming de dados financeiros", descricao: "Cotações via Yahoo Finance publicadas no Kafka e consumidas com Spark Structured Streaming até GCS/BigQuery.", categoria: "Streaming & CDC", link: "https://github.com/ArthurTheWorld/Projeto3-StreamingDados", imagem: "" },
-    { titulo: "Sentinela", descricao: "Plataforma de confiabilidade de dados: SLOs, baseline sazonal, blast radius via dbt, diagnóstico assistido e MTTR.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/sentinela", imagem: "" },
-    { titulo: "Data Quality Platform", descricao: "Pipeline ELT de e-commerce com validação de qualidade em múltiplas camadas, transformações SQL e observabilidade.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/DataQualityPlatform", imagem: "" },
-    { titulo: "Logistics Data Contracts", descricao: "Contratos de dados no padrão ODCS validados no CI/CD: o build falha se os dados quebrarem o contrato.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/logistics-data-contracts", imagem: "" },
-    { titulo: "AWS Lakehouse com Terraform", descricao: "Data Lake na AWS (S3, Glue e IAM) provisionado como código.", categoria: "Cloud & ELT", link: "https://github.com/ArthurTheWorld/AwsLakehouseIac", imagem: "" },
-    { titulo: "Cripto ELT", descricao: "ELT de criptomoedas com Airflow, dbt, Postgres e data lake S3, com idempotência e contratos de dados.", categoria: "Cloud & ELT", link: "https://github.com/ArthurTheWorld/cripto-elt", imagem: "" },
-    { titulo: "Fraud MLOps Platform", descricao: "Detecção de fraude com MLflow, API em FastAPI, monitoramento de drift e CI/CD.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/fraud-mlops-platform", imagem: "" },
-    { titulo: "Pipeline Doctor", descricao: "Diagnóstico de falhas no Airflow com LLM, MongoDB e dashboard de auditoria em Streamlit.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/pipeline-doctor", imagem: "" },
-    { titulo: "RAG local", descricao: "Assistente RAG com Ollama rodando 100% local.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/rag-ollama", imagem: "" },
+    { titulo: "Data Warehouse no Databricks", descricao: "Pipeline Landing → Bronze → Silver → Gold com Delta Live Tables, Structured Streaming e Volumes do Unity Catalog.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/Projeto-Data_Warehouse_Databricks", imagem: "", destaque: "Landing → Bronze → Silver → Gold", ferramentas: ["databricks","spark"] },
+    { titulo: "CNPJ Lakehouse", descricao: "Lakehouse sobre os dados abertos de CNPJ da Receita: ~60 milhões de empresas e ~100 GB, tratando skew e layout sujo.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/cnpj-lakehouse", imagem: "", destaque: "~60 milhões de empresas · ~100 GB", ferramentas: ["spark","dbt","duckdb"] },
+    { titulo: "CVM Fundos no BigQuery", descricao: "Lakehouse de fundos da CVM com BigQuery (raw / staging / marts), dbt, Airflow e CI.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/cvm-bigquery-lakehouse", imagem: "", destaque: "raw → staging → marts", ferramentas: ["bigquery","dbt","airflow"] },
+    { titulo: "Olist Analytics Pipeline", descricao: "Pipeline analítico com DuckDB, dbt e Streamlit sobre ~100 mil pedidos reais de e-commerce.", categoria: "Lakehouse & DW", link: "https://github.com/ArthurTheWorld/olist-analytics-pipeline", imagem: "", destaque: "~100 mil pedidos reais", ferramentas: ["duckdb","dbt","streamlit"] },
+    { titulo: "CDC Lakehouse", descricao: "CDC de ponta a ponta: Postgres → Debezium → Kafka → Spark → Delta Lake, com MERGE idempotente e evolução de schema.", categoria: "Streaming & CDC", link: "https://github.com/ArthurTheWorld/cdc-lakehouse", imagem: "", destaque: "MERGE idempotente", ferramentas: ["postgres","kafka","spark"] },
+    { titulo: "Streaming de dados financeiros", descricao: "Cotações via Yahoo Finance publicadas no Kafka e consumidas com Spark Structured Streaming até GCS/BigQuery.", categoria: "Streaming & CDC", link: "https://github.com/ArthurTheWorld/Projeto3-StreamingDados", imagem: "", destaque: "Cotações em streaming", ferramentas: ["kafka","spark","bigquery"] },
+    { titulo: "Sentinela", descricao: "Plataforma de confiabilidade de dados: SLOs, baseline sazonal, blast radius via dbt, diagnóstico assistido e MTTR.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/sentinela", imagem: "", destaque: "SLOs, blast radius e MTTR", ferramentas: ["dbt"] },
+    { titulo: "Data Quality Platform", descricao: "Pipeline ELT de e-commerce com validação de qualidade em múltiplas camadas, transformações SQL e observabilidade.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/DataQualityPlatform", imagem: "", destaque: "Qualidade em múltiplas camadas", ferramentas: ["airflow","dbt","postgres","docker"] },
+    { titulo: "Logistics Data Contracts", descricao: "Contratos de dados no padrão ODCS validados no CI/CD: o build falha se os dados quebrarem o contrato.", categoria: "Qualidade de Dados", link: "https://github.com/ArthurTheWorld/logistics-data-contracts", imagem: "", destaque: "O build falha se o contrato quebrar", ferramentas: ["duckdb","github-actions"] },
+    { titulo: "AWS Lakehouse com Terraform", descricao: "Data Lake na AWS (S3, Glue e IAM) provisionado como código.", categoria: "Cloud & ELT", link: "https://github.com/ArthurTheWorld/AwsLakehouseIac", imagem: "", destaque: "Infraestrutura como código", ferramentas: ["aws","terraform"] },
+    { titulo: "Cripto ELT", descricao: "ELT de criptomoedas com Airflow, dbt, Postgres e data lake S3, com idempotência e contratos de dados.", categoria: "Cloud & ELT", link: "https://github.com/ArthurTheWorld/cripto-elt", imagem: "", destaque: "Idempotência e contratos de dados", ferramentas: ["airflow","dbt","postgres"] },
+    { titulo: "Fraud MLOps Platform", descricao: "Detecção de fraude com MLflow, API em FastAPI, monitoramento de drift e CI/CD.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/fraud-mlops-platform", imagem: "", destaque: "Monitoramento de drift", ferramentas: ["mlflow","fastapi"] },
+    { titulo: "Pipeline Doctor", descricao: "Diagnóstico de falhas no Airflow com LLM, MongoDB e dashboard de auditoria em Streamlit.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/pipeline-doctor", imagem: "", destaque: "Diagnóstico de falhas com LLM", ferramentas: ["airflow","mongodb","streamlit"] },
+    { titulo: "RAG local", descricao: "Assistente RAG com Ollama rodando 100% local.", categoria: "MLOps & IA", link: "https://github.com/ArthurTheWorld/rag-ollama", imagem: "", destaque: "100% local", ferramentas: ["ollama"] },
   ],
 
   // ícones: veja os nomes em https://icons.getbootstrap.com

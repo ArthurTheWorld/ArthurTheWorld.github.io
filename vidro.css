@@ -1,27 +1,36 @@
 /* Camada de "liquid glass" por cima do tema neon (style.css) */
 :root {
-  --vidro-escuro: rgba(10, 10, 20, .3);    /* estrutura: barra lateral */
-  --vidro-claro: rgba(40, 40, 70, .16);    /* elementos interativos e cards */
+  --vidro-escuro: rgba(8, 8, 8, .3);       /* estrutura: barra lateral */
+  --vidro-claro: rgba(48, 48, 48, .16);    /* elementos interativos e cards */
   --vidro-borda: rgba(255, 255, 255, .14);
   --vidro-brilho: rgba(255, 255, 255, .28);
+
+  /* Paleta: preto, branco e um neon (o neon fica em --amarelo e --vermelho, nomes do tema base) */
+  --fundo: #050505;
+  --fundo-alt: #0b0b0b;
+  --cartao: #101010;
+  --texto: #f5f5f5;
+  --texto-suave: #a6a6a6;
+  --borda: #2c2c2c;
+  --ciano: #ffffff;
+  --brilho-b: 255,255,255;
+  --amarelo: #bf5fff; --vermelho: #bf5fff;  /* o roxo neon */
+  --brilho-a: 191,95,255; --brilho-c: 191,95,255;
 }
 
-/* Fundos das seções ficam transparentes para a cidade aparecer atrás do vidro */
+/* Fundos das seções ficam transparentes para o cardume aparecer atrás do vidro */
 .tema-vidro section, .tema-vidro section.alt, .tema-vidro .hero { background: transparent; }
 
-/* ---------- Fundo: cidade à noite (é o que o vidro desfoca) ---------- */
+/* ---------- Fundo: o cardume animado de fundo.js (é o que o vidro desfoca) ---------- */
 .luzes {
   position: fixed; inset: 0; z-index: -1; overflow: hidden;
-  background: linear-gradient(#06060c 0%, #0b0916 50%, #1d1030 100%);
+  background: linear-gradient(#000 0%, #050505 50%, #111 100%);
 }
-/* escurece um pouco a cidade para os textos fora dos painéis continuarem legíveis */
-.luzes::after { content: ""; position: absolute; inset: 0; z-index: 2; background: rgba(7, 7, 12, .28); }
-.camada { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
-.camada svg { display: block; width: 100%; height: 100%; }
+/* escurece só um pouco: atrás do texto do topo quem protege é .veu-texto */
+.luzes::after { content: ""; position: absolute; inset: 0; z-index: 2; background: rgba(0, 0, 0, .12); }
 .tema-vidro .grade { display: none; } /* sem a grade do tema neon */
 
-/* Parallax do brilho vermelho do topo (valor vem de fundo.js) */
-.tema-vidro .hero::before { transform: translate3d(0, var(--brilho-y, 0px), 0); }
+.tema-vidro .hero::before { display: none; } /* sem o brilho do tema neon */
 
 /* ---------- Material de vidro ---------- */
 .tema-vidro .sidebar,
@@ -68,19 +77,118 @@
 .tema-vidro .filtros button { border-color: transparent; border-radius: 999px; }
 
 /* Campos do formulário: sólidos por cima do vidro, para não empilhar vidro claro */
-.tema-vidro input, .tema-vidro textarea { background: rgba(5, 5, 12, .7); }
+.tema-vidro input, .tema-vidro textarea { background: rgba(0, 0, 0, .7); }
 
 /* Botão de menu do celular em vidro amarelo */
 .tema-vidro .menu-toggle {
-  background: rgba(252, 238, 10, .78); color: #000;
+  background: rgba(var(--brilho-a), .78); color: #000;
 }
 
 /* Textos sobre o vidro: um pouco mais fortes para continuar legíveis */
 .tema-vidro .lead, .tema-vidro .servico p, .tema-vidro .numero p { color: #b9b7c9; }
 
-/* Distorção líquida (Chrome/Edge): só na barra lateral, onde o efeito aparece mais */
-.refracao .tema-vidro .sidebar {
-  backdrop-filter: url(#liquido) blur(14px) saturate(170%);
+/* Menu do celular/tablet abre sobre o texto: mais sólido, sem saturação */
+@media (max-width: 1100px) {
+  .tema-vidro .sidebar {
+    background: rgba(8, 8, 8, .85);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+}
+
+/* Projetos: translúcidos, sem blur (14 desfoques a mais pesariam) */
+.tema-vidro .projeto { background: rgba(16, 16, 16, .82); box-shadow: inset 0 1px 0 var(--vidro-brilho); }
+.tema-vidro .projeto::after { border-color: var(--vidro-borda); }
+@media (hover: hover) and (pointer: fine) {
+  .tema-vidro .projeto:hover::after { border-color: var(--amarelo); }
+}
+/* Cards entram ao filtrar. backwards, e não both: o valor final preso quebraria o hover */
+@keyframes card-entra { from { opacity: 0; transform: scale(.97); } }
+.projeto.entra { animation: card-entra 200ms var(--ease-out) backwards; animation-delay: calc(var(--i) * 40ms); }
+
+/* Véu atrás do menu do celular */
+.veu {
+  position: fixed; inset: 0; z-index: 19; background: rgba(0, 0, 0, .55);
+  opacity: 0; pointer-events: none; transition: opacity 200ms ease;
+}
+.veu.visivel { opacity: 1; pointer-events: auto; }
+@media (min-width: 1101px) { .veu { display: none; } }
+.tema-vidro .projeto .tag { display: flex; align-items: center; gap: 8px; }
+.tema-vidro .projeto .tag i { font-size: 18px; color: var(--ciano); }
+.tema-vidro .destaque-proj { color: var(--amarelo); font-weight: 600; font-size: 17px; margin-bottom: 6px; }
+.tema-vidro .proj-rodape { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.tema-vidro .proj-rodape a { margin-top: 0; }
+.tema-vidro .proj-logos { display: flex; gap: 10px; align-items: center; }
+
+/* Logos das ferramentas: sempre em branco, para não brigar com a paleta */
+.logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; filter: brightness(0) invert(1); }
+
+/* Pipeline no topo: o caminho do dado */
+.tema-vidro .hero-conteudo { width: 100%; container-type: inline-size; }
+.pipeline {
+  list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px;
+  margin-top: 40px; max-width: 920px;
+}
+.pipeline li {
+  position: relative; display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: center;
+  padding: 12px 12px 11px; background: rgba(8, 8, 8, .94);
+  border: 1px solid var(--vidro-borda); box-shadow: inset 0 1px 0 var(--vidro-brilho);
+}
+.pipeline .logo { grid-row: span 2; }
+.pipeline strong { font-family: var(--titulo); font-size: 13px; letter-spacing: .5px; font-weight: 700; white-space: nowrap; }
+.pipeline span { font-size: 15px; line-height: 1.2; color: var(--texto-suave); }
+/* a seta entre as etapas */
+.pipeline li:not(:last-child)::after {
+  content: ""; position: absolute; left: 100%; top: 50%; width: 22px; height: 2px; background: var(--amarelo);
+  box-shadow: 0 0 8px rgba(var(--brilho-a), .7);
+}
+.pipeline li:last-child { border-color: var(--amarelo); }
+.pipeline li:last-child strong { color: var(--amarelo); }
+
+/* Ao abrir: as ligações se desenham em sequência e o Power BI acende por último. Roda uma vez. */
+.pipeline li:not(:last-child)::after { --desenho: scaleX(0); transform-origin: left; }
+@keyframes linha-desenha { from { transform: var(--desenho); } }
+@keyframes etapa-acende { from { border-color: var(--vidro-borda); } }
+@keyframes texto-acende { from { color: var(--texto); } }
+.pipeline.ligar li:not(:last-child)::after { animation: linha-desenha 260ms var(--ease-out) backwards; animation-delay: calc(var(--i) * 120ms); }
+.pipeline.ligar li:last-child { animation: etapa-acende 300ms var(--ease-out) 540ms backwards; }
+.pipeline.ligar li:last-child strong { animation: texto-acende 300ms var(--ease-out) 540ms backwards; }
+/* Pouco espaço (a barra lateral também ocupa largura): logo em cima do texto */
+@container (max-width: 860px) {
+  .pipeline { gap: 16px; }
+  .pipeline li { display: block; padding: 10px; }
+  .pipeline .logo { display: block; margin-bottom: 8px; }
+  .pipeline strong { display: block; font-size: 12px; letter-spacing: 0; white-space: normal; }
+  .pipeline span { display: block; font-size: 14px; }
+  .pipeline li:not(:last-child)::after { width: 16px; }
+}
+
+/* Competências por área */
+.tema-vidro .barras { align-items: stretch; }
+.grupo-comp {
+  padding: 22px 24px;
+  clip-path: polygon(0 0, calc(100% - var(--corte)) 0, 100% var(--corte), 100% 100%, var(--corte) 100%, 0 calc(100% - var(--corte)));
+  background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.02) 45%), var(--vidro-claro);
+  border: 1px solid var(--vidro-borda); box-shadow: inset 0 1px 0 var(--vidro-brilho);
+  -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+}
+.grupo-comp h3 { font-family: var(--titulo); font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: var(--amarelo); margin-bottom: 14px; }
+.grupo-comp ul { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 22px; }
+.grupo-comp li { display: flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 500; }
+.grupo-comp li i { font-size: 18px; width: 20px; text-align: center; }
+
+.tema-vidro .marcas { margin-top: 4px; font-size: 13px; }
+
+@media (min-width: 900px) {
+  .tema-vidro .barras { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+}
+/* Telas menores: pipeline em coluna, ligada por uma linha vertical */
+@media (max-width: 760px) {
+  .pipeline { grid-template-columns: 1fr; gap: 10px; margin-top: 30px; max-width: 320px; }
+  .pipeline li { display: grid; padding: 8px 12px; }
+  .pipeline .logo { margin-bottom: 0; }
+  .pipeline strong { font-size: 13px; }
+  .pipeline li:not(:last-child)::after { left: 22px; top: 100%; width: 2px; height: 10px; --desenho: scaleY(0); transform-origin: top; }
 }
 
 /* ---------- Acessibilidade ---------- */
@@ -89,7 +197,7 @@
   .tema-vidro .servico, .tema-vidro .contato-info, .tema-vidro form {
     -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--cartao);
   }
-  .tema-vidro .sidebar { background: #040407; }
+  .tema-vidro .sidebar { background: #050505; }
 }
 @media (prefers-contrast: more) {
   .tema-vidro .sidebar, .tema-vidro .info, .tema-vidro .numero, .tema-vidro .filtros,
@@ -100,9 +208,32 @@
 
 /* No celular o desfoque pesa mais: menos blur */
 @media (max-width: 700px) {
-  .luzes::after { background: rgba(7, 7, 12, .58); } /* no celular os textos ficam sobre a cidade */
   .tema-vidro .info, .tema-vidro .numero, .tema-vidro .servico, .tema-vidro .contato-info, .tema-vidro form {
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     backdrop-filter: blur(12px) saturate(150%);
   }
+}
+
+/* Canvas do cardume */
+.ascii { position: absolute; inset: 0; display: block; transition: opacity 300ms ease; }
+.ascii.ao-ler { opacity: .2; } /* recua durante a leitura das seções */
+@media (prefers-reduced-motion: reduce) { .ascii { transition: none; } }
+
+/* Botão de pausa do fundo animado */
+.pausa-fundo {
+  position: absolute; right: 16px; bottom: 16px; z-index: 2; width: 44px; height: 44px;
+  display: grid; place-items: center; cursor: pointer; font-size: 20px; color: var(--texto);
+  background: rgba(10, 10, 10, .72); border: 1px solid var(--vidro-borda);
+  transition: border-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out);
+}
+.pausa-fundo:active { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) {
+  .pausa-fundo:hover { border-color: var(--amarelo); color: var(--amarelo); }
+}
+@media (prefers-reduced-motion: reduce) { .pausa-fundo:active { transform: none; } }
+
+/* Escurece o peixe atrás do texto do topo, com borda suave */
+.veu-texto {
+  position: absolute; z-index: -1; pointer-events: none;
+  background: rgba(0, 0, 0, .8); box-shadow: 0 0 26px 18px rgba(0, 0, 0, .8);
 }
