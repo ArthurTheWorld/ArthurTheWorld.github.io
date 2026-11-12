@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="style.css?v=4" rel="stylesheet">
-  <link href="vidro.css?v=17" rel="stylesheet">
+  <link href="vidro.css?v=18" rel="stylesheet">
 </head>
 <body class="tema-vidro">
 
@@ -124,7 +124,8 @@
   </main>
 
   <script src="dados.js?v=3"></script>
-  <script src="script.js?v=4"></script>
+  <script src="idioma.js?v=1"></script>
+  <script src="script.js?v=5"></script>
   <script src="fundo.js?v=20"></script>
   <script>
     // Efeito glitch usa o nome como texto das camadas
@@ -145,8 +146,9 @@
         "> carregando pipelines.......OK",
         "> conectando ao lakehouse....OK",
         "> verificando credenciais....OK",
-        `> bem-vindo, ${DADOS.nome.toUpperCase()}`,
-      ];
+        "> bem-vindo,",
+      ].map(tr);
+      linhas[linhas.length - 1] += ` ${DADOS.nome.toUpperCase()}`;
       const pre = document.getElementById("bootTexto");
       linhas.forEach((l, i) => setTimeout(() => (pre.textContent += l + "\n"), 100 * i));
       setTimeout(() => { boot.classList.add("sair"); ligar(); }, 100 * linhas.length + 100);

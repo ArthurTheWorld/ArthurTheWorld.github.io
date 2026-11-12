@@ -4,6 +4,8 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 const d = DADOS;
+// Tradução dos textos fixos (idioma.js); sem ele, fica tudo em português
+const tr = window.tr || ((s) => s);
 const poucoMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.title = `${d.nome} | ${d.titulo}`;
 
@@ -80,7 +82,7 @@ $("experiencias").innerHTML = d.experiencias.map(itemTempo).join("");
 // Projetos com filtro
 const iconeCategoria = ["bi-database", "bi-lightning-charge", "bi-shield-check", "bi-cloud", "bi-robot"];
 $("filtros").innerHTML = ["Todos", ...d.categorias]
-  .map((c, i) => `<button class="${i === 0 ? "ativo" : ""}" data-filtro="${esc(c)}">${esc(c)}</button>`)
+  .map((c, i) => `<button class="${i === 0 ? "ativo" : ""}" data-filtro="${esc(c)}">${esc(i === 0 ? tr(c) : c)}</button>`)
   .join("");
 const LIMITE_PROJETOS = 6;
 // animarDe: a partir de qual card os novos entram com animação (null = nenhum)
@@ -90,7 +92,7 @@ function mostrarProjetos(filtro, verTudo = false, animarDe = null) {
   const botaoTodos = $("verTodos");
   if (botaoTodos) {
     botaoTodos.hidden = !resumir;
-    botaoTodos.textContent = `Ver todos os ${lista.length} projetos`;
+    botaoTodos.textContent = window.IDIOMA === "en" ? `View all ${lista.length} projects` : `Ver todos os ${lista.length} projetos`;
   }
   $("projetosGrid").innerHTML = (resumir ? lista.slice(0, LIMITE_PROJETOS) : lista)
     .map((p, i) => {
@@ -107,7 +109,7 @@ function mostrarProjetos(filtro, verTudo = false, animarDe = null) {
           ${temaVidro && p.destaque ? `<p class="destaque-proj">${esc(p.destaque)}</p>` : ""}
           <p>${esc(p.descricao)}</p>
           <div class="proj-rodape">
-            ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Ver projeto <i class="bi bi-arrow-right"></i></a>` : ""}
+            ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${tr("Ver projeto")} <i class="bi bi-arrow-right"></i></a>` : ""}
             ${temaVidro && p.ferramentas ? `<span class="proj-logos">${p.ferramentas.map((f) => logo(f)).join("")}</span>` : ""}
           </div>
         </div>
@@ -134,7 +136,7 @@ $("servicosGrid").innerHTML = d.servicos
 
 // Contato
 const contatos = [
-  { icone: "bi-geo-alt", titulo: "Localização", valor: d.info[0]?.valor },
+  { icone: "bi-geo-alt", titulo: tr("Localização"), valor: d.info[0]?.valor },
   { icone: "bi-envelope", titulo: "Email", valor: d.redes.email, href: `mailto:${d.redes.email}` },
   { icone: "bi-linkedin", titulo: "LinkedIn", valor: d.redes.linkedin.replace(/^https?:\/\//, ""), href: d.redes.linkedin },
   { icone: "bi-github", titulo: "GitHub", valor: d.redes.github.replace(/^https?:\/\//, ""), href: d.redes.github },
@@ -156,14 +158,14 @@ $("formContato").addEventListener("submit", async (e) => {
     location.href = `mailto:${d.redes.email}?subject=${encodeURIComponent(campos.assunto)}&body=${encodeURIComponent(corpo)}`;
     return;
   }
-  $("statusForm").textContent = "Enviando…";
+  $("statusForm").textContent = tr("Enviando…");
   try {
     const r = await fetch(d.formspree, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
     if (!r.ok) throw new Error();
     form.reset();
-    $("statusForm").textContent = "Mensagem enviada. Obrigado!";
+    $("statusForm").textContent = tr("Mensagem enviada. Obrigado!");
   } catch {
-    $("statusForm").textContent = "Não foi possível enviar. Tente pelo email.";
+    $("statusForm").textContent = tr("Não foi possível enviar. Tente pelo email.");
   }
 });
 
@@ -225,7 +227,7 @@ function menu(aberto) {
   $("sidebar").classList.toggle("aberta", aberto);
   $("veu")?.classList.toggle("visivel", aberto);
   $("menuToggle").setAttribute("aria-expanded", aberto);
-  $("menuToggle").setAttribute("aria-label", aberto ? "Fechar menu" : "Abrir menu");
+  $("menuToggle").setAttribute("aria-label", tr(aberto ? "Fechar menu" : "Abrir menu"));
 }
 $("menuToggle").addEventListener("click", () => menu(!$("sidebar").classList.contains("aberta")));
 $("veu")?.addEventListener("click", () => menu(false));
